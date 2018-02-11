@@ -1,12 +1,11 @@
 ﻿using UnityEngine;
-using DG.Tweening;
 using UnityEngine.UI;
 
 [RequireComponent(typeof(AudioSource))]
 public class GameController : MonoBehaviour {
 
     public static float CELL_SIZE = 1.0f;
-    public static float MOVE_DURATION = 0.0f;
+    public static float MOVE_DURATION = 0.05f;
 
     public GameObject CellPrefab;
     public GameObject BlockPrefab;
@@ -22,7 +21,6 @@ public class GameController : MonoBehaviour {
     private bool isKeyDownPressed = false;
     private bool isKeyLeftPressed = false;
     private bool isKeyRightPressed = false;
-    private Tweener tween = null;
     private int newRow;
     private float tickValue = 0.0f;
     private float maxTick = 1.650f;
@@ -37,7 +35,7 @@ public class GameController : MonoBehaviour {
     {
         field = new Field();
         block = Instantiate(BlockPrefab);
-        block.transform.SetParent(Zero.transform,true);
+        block.transform.SetParent(Zero.transform,false);
         buildBlock();
     }
 
@@ -53,7 +51,7 @@ public class GameController : MonoBehaviour {
             float x = (float)field.block.pattern[i*2];
             float y = -(float)field.block.pattern[i*2+1];
             GameObject c = Instantiate(CellPrefab);
-            c.transform.SetParent(block.transform);
+            c.transform.SetParent(block.transform, true);
             c.transform.localPosition = new Vector3(x-0.5f, y+0.5f, -0.7f);
             var view = c.GetComponent<CellViewController>();
             view.CurrentMatID = field.block.color;
@@ -64,37 +62,32 @@ public class GameController : MonoBehaviour {
     private void updateField()
     {
         GameObject cell;
-        CellViewController view;
 
-        for (int m = 0; m < field.columns; m++)
+        for (int col = 0; col < field.columns; col++)
         {
-            for (int n = 0; n < field.rows; n++)
+            for (int row = 0; row < field.rows; row++)
             {
-                if (field.grid[m, n] > -1)
+                if (field.grid[col, row] > -1)
                 {
-                    if (fieldCells[m, n] != null)
+                    if (fieldCells[col, row] != null)
                     {
-                        cell = fieldCells[m, n];
-                        view = cell.GetComponent<CellViewController>();
-                        view.CurrentMatID = field.grid[m, n];
+                        cell = fieldCells[col, row];
+                        cell.GetComponent<CellViewController>().CurrentMatID = field.grid[col, row];
                     }
                     else
                     {
-                        float x = (float)m;
-                        float y = (float)n;
                         cell = Instantiate(CellPrefab);
-                        cell.transform.localPosition = new Vector3(x + 0.5f, y + 0.5f+1.5f, -0.7f);
-                        view = cell.GetComponent<CellViewController>();
-                        view.CurrentMatID = field.grid[m, n];
-                        cell.transform.SetParent(block.transform);
-                        fieldCells[m, n] = cell;
+                        cell.transform.localPosition = new Vector3((float)col - 0.5f +1, (float)row + 0.5f, -0.7f);
+                        cell.GetComponent<CellViewController>().CurrentMatID = field.grid[col, row];
+                        cell.transform.SetParent(Zero.transform, false);
+                        fieldCells[col, row] = cell;
                     }
                 }
 
-                if (field.grid[m, n] < 0 && fieldCells[m, n] != null )
+                if (field.grid[col, row] < 0 && fieldCells[col, row] != null )
                 {
-                    DestroyImmediate(fieldCells[m, n]);
-                    fieldCells[m, n] = null;
+                    DestroyImmediate(fieldCells[col, row]);
+                    fieldCells[col, row] = null;
                 }
             }
         }
@@ -103,11 +96,6 @@ public class GameController : MonoBehaviour {
     void Update ()
     {
         tickValue += Time.fixedDeltaTime;
-
-        if (tween != null && !tween.IsComplete())
-        {
-            return;
-        }
 
         if ( tickValue >= maxTick)
         {
@@ -178,8 +166,8 @@ public class GameController : MonoBehaviour {
             isKeyDownPressed = false;
             newRow = field.blockDown();
             
-            tween = block.transform.DOMoveY(newRow, 0.25f);
-            tween.OnComplete(onDownTweenComplete);
+            block.transform.localPosition = new Vector3(block.transform.localPosition.x, (float)newRow, block.transform.localPosition.z);
+            onDownTweenComplete();
         }
 
         if (Input.GetKeyDown(KeyCode.I)) field.block.setBlock(0);
@@ -193,26 +181,9 @@ public class GameController : MonoBehaviour {
    
     private void onDownTweenComplete()
     {
-        tween = null;
         field.block.row = newRow;
         field.setBlock();
         field.isRedrawed = true;
-    }
-
-    private string printGrid()
-    {
-        string grid = "";
-        for (int r = field.rows-1; r >= 0; r--)
-        {
-            for (int c = 0; c < field.columns; c++)
-            {
-                if (field.grid[c, r] >= 0) { grid += " " + field.grid[c, r]; }
-                else { grid += " " + "-"; }
-            }
-
-            grid += "\n";
-        }
-        return grid;
     }
 
     private void blockReset()
@@ -223,9 +194,8 @@ public class GameController : MonoBehaviour {
     public void moveHandler()
     {
         float newX = (float)field.block.column;
-        float newY = (float)field.block.row+2+0.3f;
-        block.transform.DOMoveX(newX, MOVE_DURATION);
-        block.transform.DOMoveY(newY, MOVE_DURATION);
+        float newY = (float)field.block.row;
+        block.transform.localPosition = new Vector3(newX, newY, 0);
     }
 
     public void rotateHandler()

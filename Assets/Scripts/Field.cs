@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-class Field
+﻿public class Field
 {
     public int[,] grid;
     public int columns;
@@ -9,7 +6,6 @@ class Field
     public int score = 0;
     public Block block;
     public bool isRedrawed = false;
-    //public int[] removedLines = new int[4]();
 
     public Field()
     {

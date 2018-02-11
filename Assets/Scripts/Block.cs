@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-class Block
+public class Block
 {
     public int[] pattern = new int[8]; // Rotated pattern.
     public int[] newPattern = new int[8]; // Pre-Rotated pattern.
@@ -116,7 +116,7 @@ class Block
 
     public void setBlock(int id)
     {
-        column = rand.Next(0,field.columns-1); // TODO: Need random column.
+        column = Random.Range(0,field.columns-1); 
         row = field.rows;
         color = id;
         pattern = (int[])BlocksPatterns.patterns[color].Clone();
