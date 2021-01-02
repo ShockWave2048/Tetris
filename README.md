@@ -1,7 +1,7 @@
 # Tetris
 Tetris Unity Project Game
 
-Unity version - 2017.3.1f1
+Unity version - 2020.2.1f1
 
 Simple tetris game, for all range devices.
 
