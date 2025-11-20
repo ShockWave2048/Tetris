@@ -1,1 +1,67 @@
-Nothing should be ignored based on the provided file changes. The only modified file is a source code file (.cs), which should not be ignored.
+```
+# Unity specific ignores
+Library/
+Temp/
+Obj/
+Build/
+Logs/
+*.unityproj
+*.sln
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.meta
+*.unity
+*.unitypackage
+*.prefab
+*.mat
+*.anim
+*.controller
+*.guiskin
+*.fontsettings
+*.giparams
+*.noasset
+*.flare
+*.mask
+*.physicsMaterial2D
+*.physicsMaterial
+*.asset
+*.cubemap
+*.prefs
+*.mat.meta
+*.anim.meta
+*.controller.meta
+*.guiskin.meta
+*.fontsettings.meta
+*.giparams.meta
+*.noasset.meta
+*.unity.meta
+*.prefab.meta
+*.cubemap.meta
+*.flare.meta
+*.mask.meta
+*.physicsMaterial2D.meta
+*.physicsMaterial.meta
+*.asset.meta
+*.prefs.meta
+
+# Build artifacts
+*.dll
+*.exe
+*.pdb
+*.mdb
+
+# Test results
+TestResults/
+*.testresults
+
+# Environment
+.env
+.env.local
+.env.*
+
+# Logs
+*.log
+```
